@@ -1,4 +1,4 @@
-package i18n
+package discordgoi18n
 
 import (
 	"github.com/bwmarrin/discordgo"
