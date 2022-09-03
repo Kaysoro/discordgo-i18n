@@ -1,4 +1,5 @@
 builds:
+  - skip: true
   - binary: discordgoi18n
     main: ./discordgoi18n/
     goos:
