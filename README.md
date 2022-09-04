@@ -15,7 +15,7 @@ discordgo-i18n is a simple and lightweight Go package that helps you translate G
 This assumes you already have a working Go environment, if not please see
 [this page](https://golang.org/doc/install) first.
 
-`go get` *will always pull the latest tagged release from the master branch.*
+`go get` *will always pull the latest tagged release from the main branch.*
 
 ```sh
 go get github.com/kaysoro/discordgo-i18n
@@ -25,7 +25,57 @@ go get github.com/kaysoro/discordgo-i18n
 
 ## Usage
 
-TODO
+Import the package into your project.
+
+```go
+import i18n "github.com/kaysoro/discordgo-i18n"
+```
+
+Load bundles for locales to support.
+
+```go
+err := i18n.LoadBundle(discordgo.French, "path/to/your/file.json")
+```
+
+The bundle format must respect the schema below; note [text/template](http://golang.org/pkg/text/template/) syntax is used to inject variables. Since the library lets you define multiple translations per key, an array is required.
+
+```json
+{
+    "hello_world": ["Hello world!"],
+    "hello_anyone": ["Hello {{ .anyone }}!"],
+    "bye": ["See you", "Bye!"],
+}
+```
+
+By default, the locale fallback used when a key does not have any translations is `discordgo.EnglishUS`. To change it, use the following method.
+
+```go
+i18n.SetDefault(discordgo.ChineseCN)
+```
+
+To get translations use the below thread-safe method; if any translation cannot be found or an error occurred even with the fallback, key is returned.
+
+```go
+helloWorld := i18n.Get(discordgo.EnglishUS, "hello_world")
+fmt.Println(helloWorld)
+// Prints "Hello world!"
+
+helloAnyone := i18n.Get(discordgo.EnglishUS, "hello_anyone")
+fmt.Println(helloAnyone)
+// Prints "Hello {{ .anyone }}!"
+
+helloAnyone = i18n.Get(discordgo.EnglishUS, "hello_anyone", map[string]interface{}{"anyone": "Nick"})
+fmt.Println(helloAnyone)
+// Prints "Hello Nick!"
+
+bye := i18n.Get(discordgo.EnglishUS, "bye")
+fmt.Println(bye)
+// Prints randomly "See you" or "Bye!"
+
+keyDoesNotExist := i18n.Get(discordgo.EnglishUS, "key_does_not_exist")
+fmt.Println(keyDoesNotExist)
+// Prints "key_does_not_exist"
+```
 
 ## Contributing
 
@@ -34,7 +84,7 @@ Contributions are very welcomed, however please follow the below guidelines.
 - First open an issue describing the bug or enhancement so it can be
 discussed.  
 - Try to match current naming conventions as closely as possible.  
-- Create a Pull Request with your changes against the master branch.
+- Create a Pull Request with your changes against the main branch.
 
 # Licence
 
