@@ -47,11 +47,11 @@ const (
 )
 
 var (
-	translatorTest *TranslatorImpl
+	translatorTest *translatorImpl
 )
 
 func setUp() {
-	translatorTest = New()
+	translatorTest = new()
 	if err := os.WriteFile(translatornominalCase1, []byte(content1), os.ModePerm); err != nil {
 		log.Fatal().Err(err).Msgf("'%s' could not be created, test stopped", translatornominalCase1)
 	}
@@ -148,14 +148,14 @@ func TestGet(t *testing.T) {
 
 	// Nominal case, Get existing key from loaded bundle
 	assert.Equal(t, "this is a {{ .Test }}", translatorTest.Get(discordgo.Dutch, "hi", nil))
-	assert.Equal(t, "this is a test :)", translatorTest.Get(discordgo.Dutch, "hi", map[string]interface{}{"Test": "test :)"}))
+	assert.Equal(t, "this is a test :)", translatorTest.Get(discordgo.Dutch, "hi", Vars{"Test": "test :)"}))
 
 	// Nominal case, Get key not present in loaded bundle but available in default
 	assert.Equal(t, "see you", translatorTest.Get(discordgo.Dutch, "bye", nil))
 
 	// Bad case, value is not well structured to be parsed
-	assert.Equal(t, "{{if $foo}}{{end}}", translatorTest.Get(discordgo.Dutch, "parse", map[string]interface{}{}))
+	assert.Equal(t, "{{if $foo}}{{end}}", translatorTest.Get(discordgo.Dutch, "parse", Vars{}))
 
 	// Bad case, value is well structured but cannot inject value
-	assert.Equal(t, "this is a {{ .Test }}", translatorTest.Get(discordgo.Dutch, "hi", map[string]interface{}{}))
+	assert.Equal(t, "this is a {{ .Test }}", translatorTest.Get(discordgo.Dutch, "hi", Vars{}))
 }

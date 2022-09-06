@@ -9,10 +9,10 @@ import (
 
 func TestFacade(t *testing.T) {
 	var expectedFile, expectedKey = "File", "Key"
-	var expectedValues map[string]interface{}
+	var expectedValues Vars
 	var called bool
 
-	mock := NewMock()
+	mock := newMock()
 	mock.SetDefaultFunc = func(locale discordgo.Locale) {
 		assert.Equal(t, discordgo.Italian, locale)
 		called = true
@@ -23,7 +23,7 @@ func TestFacade(t *testing.T) {
 		called = true
 		return nil
 	}
-	mock.GetFunc = func(locale discordgo.Locale, key string, values map[string]interface{}) string {
+	mock.GetFunc = func(locale discordgo.Locale, key string, values Vars) string {
 		assert.Equal(t, discordgo.ChineseCN, locale)
 		assert.Equal(t, expectedValues, values)
 		assert.Equal(t, expectedKey, key)
@@ -31,7 +31,7 @@ func TestFacade(t *testing.T) {
 		return ""
 	}
 
-	translator = mock
+	instance = mock
 
 	called = false
 	SetDefault(discordgo.Italian)
@@ -42,22 +42,22 @@ func TestFacade(t *testing.T) {
 	assert.True(t, called)
 
 	called = false
-	expectedValues = make(map[string]interface{})
+	expectedValues = make(Vars)
 	Get(discordgo.ChineseCN, expectedKey)
 	assert.True(t, called)
 
 	called = false
-	expectedValues = map[string]interface{}{
+	expectedValues = Vars{
 		"Hi": "There",
 	}
 	Get(discordgo.ChineseCN, expectedKey, expectedValues)
 	assert.True(t, called)
 
 	called = false
-	expectedValues = map[string]interface{}{
+	expectedValues = Vars{
 		"Hi":  "There",
 		"Bye": "See u",
 	}
-	Get(discordgo.ChineseCN, expectedKey, map[string]interface{}{"Hi": "There"}, map[string]interface{}{"Bye": "See u"})
+	Get(discordgo.ChineseCN, expectedKey, Vars{"Hi": "There"}, Vars{"Bye": "See u"})
 	assert.True(t, called)
 }

@@ -10,7 +10,7 @@ import (
 func TestMock(t *testing.T) {
 
 	// Must not panic
-	mock := NewMock()
+	mock := newMock()
 	mock.SetDefault(discordgo.ChineseCN)
 	assert.NoError(t, mock.LoadBundle(discordgo.SpanishES, ""))
 	assert.Empty(t, mock.Get(discordgo.Croatian, "", nil))
@@ -23,7 +23,7 @@ func TestMock(t *testing.T) {
 		called = true
 		return nil
 	}
-	mock.GetFunc = func(locale discordgo.Locale, key string, values map[string]interface{}) string {
+	mock.GetFunc = func(locale discordgo.Locale, key string, values Vars) string {
 		called = true
 		return ""
 	}

@@ -1,8 +1,9 @@
 name: GoReleaser
 
 on:
-  - push
-  - pull_request
+  push:
+    tags:
+      - '*'
 
 jobs:
   goreleaser:

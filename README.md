@@ -1,9 +1,14 @@
-# discordgo-i18n ![Build status](https://github.com/kaysoro/discordgo-i18n/workflows/Build/badge.svg) [![Report card](https://goreportcard.com/badge/github.com/kaysoro/discordgo-i18n)](https://goreportcard.com/report/github.com/kaysoro/discordgo-i18n) [![codecov](https://codecov.io/gh/kaysoro/discordgo-i18n/branch/main/graph/badge.svg)](https://codecov.io/gh/kaysoro/discordgo-i18n) [![Sourcegraph](https://sourcegraph.com/github.com/kaysoro/discordgo-i18n/-/badge.svg)](https://sourcegraph.com/github.com/kaysoro/discordgo-i18n?badge)
+# discordgo-i18n
+[![GoDoc](https://godoc.org/github.com/kaysoro/discordgo-i18n?status.svg)](https://godoc.org/github.com/kaysoro/discordgo-i18n)
+![Build status](https://github.com/kaysoro/discordgo-i18n/workflows/Build/badge.svg) 
+[![Report card](https://goreportcard.com/badge/github.com/kaysoro/discordgo-i18n)](https://goreportcard.com/report/github.com/kaysoro/discordgo-i18n) 
+[![codecov](https://codecov.io/gh/kaysoro/discordgo-i18n/branch/main/graph/badge.svg)](https://codecov.io/gh/kaysoro/discordgo-i18n) 
+[![Sourcegraph](https://sourcegraph.com/github.com/kaysoro/discordgo-i18n/-/badge.svg)](https://sourcegraph.com/github.com/kaysoro/discordgo-i18n?badge)
 
 discordgo-i18n is a simple and lightweight Go package that helps you translate Go programs into [languages supported by Discord](https://discord.com/developers/docs/reference#locales).
 
 - Built to ease usage of [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo)
-- Less verbose than [go-i18n](https://raw.githubusercontent.com/nicksnyder/go-i18n)
+- Less verbose than [go-i18n](https://github.com/nicksnyder/go-i18n)
 - Supports multiple strings per key to make your bot "more alive"
 - Supports strings with named variables using [text/template](http://golang.org/pkg/text/template/) syntax
 - Supports message files of JSON format
@@ -44,6 +49,7 @@ The bundle format must respect the schema below; note [text/template](http://gol
     "hello_world": ["Hello world!"],
     "hello_anyone": ["Hello {{ .anyone }}!"],
     "bye": ["See you", "Bye!"],
+    "image": ["https://media2.giphy.com/media/Ju7l5y9osyymQ/giphy.gif"]
 }
 ```
 
@@ -64,7 +70,7 @@ helloAnyone := i18n.Get(discordgo.EnglishUS, "hello_anyone")
 fmt.Println(helloAnyone)
 // Prints "Hello {{ .anyone }}!"
 
-helloAnyone = i18n.Get(discordgo.EnglishUS, "hello_anyone", map[string]interface{}{"anyone": "Nick"})
+helloAnyone = i18n.Get(discordgo.EnglishUS, "hello_anyone", i18n.Vars{"anyone": "Nick"})
 fmt.Println(helloAnyone)
 // Prints "Hello Nick!"
 
@@ -75,6 +81,28 @@ fmt.Println(bye)
 keyDoesNotExist := i18n.Get(discordgo.EnglishUS, "key_does_not_exist")
 fmt.Println(keyDoesNotExist)
 // Prints "key_does_not_exist"
+```
+
+Here an example of how it can work with interactions.
+
+```go
+func HelloWorld(s *discordgo.Session, i *discordgo.InteractionCreate) {
+
+    err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		Type: discordgo.InteractionResponseChannelMessageWithSource,
+		Data: &discordgo.InteractionResponseData{
+			Embeds: []*discordgo.MessageEmbed{
+                {
+                    Title:       i18n.Get(i.Locale, "hello_world"),
+		            Description: i18n.Get(i.Locale, "hello_anyone", i18n.Vars{"anyone": i.Member.Nick}),
+                    Image:       &discordgo.MessageEmbedImage{URL: i18n.Get(i.Locale, "image")},
+                },
+            },
+		},
+	})
+
+    // ...
+}
 ```
 
 ## Contributing

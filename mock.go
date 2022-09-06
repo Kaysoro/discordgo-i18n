@@ -5,11 +5,11 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func NewMock() *TranslatorMock {
-	return &TranslatorMock{}
+func newMock() *translatorMock {
+	return &translatorMock{}
 }
 
-func (mock *TranslatorMock) SetDefault(locale discordgo.Locale) {
+func (mock *translatorMock) SetDefault(locale discordgo.Locale) {
 	if mock.SetDefaultFunc != nil {
 		mock.SetDefaultFunc(locale)
 		return
@@ -18,7 +18,7 @@ func (mock *TranslatorMock) SetDefault(locale discordgo.Locale) {
 	log.Warn().Msgf("SetDefault not mocked")
 }
 
-func (mock *TranslatorMock) LoadBundle(locale discordgo.Locale, file string) error {
+func (mock *translatorMock) LoadBundle(locale discordgo.Locale, file string) error {
 	if mock.LoadBundleFunc != nil {
 		return mock.LoadBundleFunc(locale, file)
 	}
@@ -27,7 +27,7 @@ func (mock *TranslatorMock) LoadBundle(locale discordgo.Locale, file string) err
 	return nil
 }
 
-func (mock *TranslatorMock) Get(locale discordgo.Locale, key string, values map[string]interface{}) string {
+func (mock *translatorMock) Get(locale discordgo.Locale, key string, values Vars) string {
 	if mock.GetFunc != nil {
 		return mock.GetFunc(locale, key, values)
 	}

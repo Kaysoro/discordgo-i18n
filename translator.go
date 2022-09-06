@@ -19,19 +19,19 @@ const (
 	executionPolicy = "missingkey=error"
 )
 
-func New() *TranslatorImpl {
-	return &TranslatorImpl{
+func new() *translatorImpl {
+	return &translatorImpl{
 		defaultLocale: defaultLocale,
 		translations:  make(map[discordgo.Locale]bundle),
 		loadedBundles: make(map[string]bundle),
 	}
 }
 
-func (translator *TranslatorImpl) SetDefault(language discordgo.Locale) {
+func (translator *translatorImpl) SetDefault(language discordgo.Locale) {
 	translator.defaultLocale = language
 }
 
-func (translator *TranslatorImpl) LoadBundle(locale discordgo.Locale, path string) error {
+func (translator *translatorImpl) LoadBundle(locale discordgo.Locale, path string) error {
 	loadedBundle, found := translator.loadedBundles[path]
 	if !found {
 
@@ -51,14 +51,14 @@ func (translator *TranslatorImpl) LoadBundle(locale discordgo.Locale, path strin
 		translator.translations[locale] = newBundle
 
 	} else {
-		log.Debug().Msgf("Bundle '%s' already loaded, content now linked to locale %s too", path, locale)
+		log.Debug().Msgf("Bundle '%s' loaded with '%s' content (already loaded for other locales)", locale, path)
 		translator.translations[locale] = loadedBundle
 	}
 
 	return nil
 }
 
-func (translator *TranslatorImpl) Get(locale discordgo.Locale, key string, variables map[string]interface{}) string {
+func (translator *translatorImpl) Get(locale discordgo.Locale, key string, variables Vars) string {
 	bundles, found := translator.translations[locale]
 	if !found {
 		if locale != translator.defaultLocale {
