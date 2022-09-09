@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/rs/zerolog/log"
@@ -18,6 +19,10 @@ const (
 	rightDelim      = "}}"
 	executionPolicy = "missingkey=error"
 )
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
 
 func new() *translatorImpl {
 	return &translatorImpl{
