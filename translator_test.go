@@ -1,7 +1,9 @@
 package discordgoi18n
 
 import (
+	"fmt"
 	"os"
+	"reflect"
 	"testing"
 
 	"github.com/bwmarrin/discordgo"
@@ -36,13 +38,12 @@ const (
 	`
 
 	badContent = `
-	 {
-		"content": {
-			"not": {
-				"ok": "test"
-			}
-		}
-	 }
+	 [
+		"content",
+		"not",
+		"ok",
+		"test"
+	 ]
 	`
 )
 
@@ -158,4 +159,77 @@ func TestGet(t *testing.T) {
 
 	// Bad case, value is well structured but cannot inject value
 	assert.Equal(t, "this is a {{ .Test }}", translatorTest.Get(discordgo.Dutch, "hi", Vars{}))
+}
+
+func TestMapBundleStructure(t *testing.T) {
+	setUp()
+	defer tearDown()
+
+	tests := []struct {
+		Description    string
+		Input          map[string]interface{}
+		ExpectedBundle bundle
+	}{
+		{
+			Description:    "Nil Input",
+			Input:          nil,
+			ExpectedBundle: make(bundle),
+		},
+		{
+			Description:    "Empty Input",
+			Input:          make(map[string]interface{}),
+			ExpectedBundle: make(bundle),
+		},
+		{
+			Description: "Simple string Input",
+			Input: map[string]interface{}{
+				"simple":       "translation",
+				"variabilized": "translation {{ .translation }}",
+			},
+			ExpectedBundle: bundle{
+				"simple":       []string{"translation"},
+				"variabilized": []string{"translation {{ .translation }}"},
+			},
+		},
+		{
+			Description: "Different types handled",
+			Input: map[string]interface{}{
+				"pi":                                  3.14,
+				"answer_to_ultimate_question_of_life": 42,
+				"some_prime_numbers":                  []interface{}{2, "3", 5.0, 7},
+			},
+			ExpectedBundle: bundle{
+				"pi":                                  []string{"3.14"},
+				"answer_to_ultimate_question_of_life": []string{"42"},
+				"some_prime_numbers":                  []string{"2", "3", "5", "7"},
+			},
+		},
+		{
+			Description: "Deep structure",
+			Input: map[string]interface{}{
+				"command": map[string]interface{}{
+					"salutation": map[string]interface{}{
+						"hi":  "Hello there!",
+						"bye": []interface{}{"Bye {{ .anyone }}!", "See u {{ .anyone }}"},
+					},
+					"speak": map[string]interface{}{
+						"random": []interface{}{"love to talk", "how are u?", "u're so interesting"},
+					},
+				},
+				"panic": "I've panicked!",
+			},
+			ExpectedBundle: bundle{
+				"command.salutation.hi":  []string{"Hello there!"},
+				"command.salutation.bye": []string{"Bye {{ .anyone }}!", "See u {{ .anyone }}"},
+				"command.speak.random":   []string{"love to talk", "how are u?", "u're so interesting"},
+				"panic":                  []string{"I've panicked!"},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		bundle := translatorTest.mapBundleStructure(test.Input)
+		assert.True(t, reflect.DeepEqual(test.ExpectedBundle, bundle),
+			fmt.Sprintf("%s:\n\nExpecting: %v\n\nGot      : %v", test.Description, test.ExpectedBundle, bundle))
+	}
 }

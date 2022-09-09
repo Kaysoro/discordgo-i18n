@@ -3,6 +3,7 @@ package discordgoi18n
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"os"
 	"strings"
@@ -17,6 +18,7 @@ const (
 	defaultLocale   = discordgo.EnglishUS
 	leftDelim       = "{{"
 	rightDelim      = "}}"
+	keyDelim        = "."
 	executionPolicy = "missingkey=error"
 )
 
@@ -45,11 +47,13 @@ func (translator *translatorImpl) LoadBundle(locale discordgo.Locale, path strin
 			return err
 		}
 
-		var newBundle bundle
-		err = json.Unmarshal(buf, &newBundle)
+		var jsonContent map[string]interface{}
+		err = json.Unmarshal(buf, &jsonContent)
 		if err != nil {
 			return err
 		}
+
+		newBundle := translator.mapBundleStructure(jsonContent)
 
 		log.Debug().Msgf("Bundle '%s' loaded with '%s' content", locale, path)
 		translator.loadedBundles[path] = newBundle
@@ -105,4 +109,29 @@ func (translator *translatorImpl) Get(locale discordgo.Locale, key string, varia
 	}
 
 	return raw
+}
+
+func (translator *translatorImpl) mapBundleStructure(jsonContent map[string]interface{}) bundle {
+	bundle := make(map[string][]string)
+	for key, content := range jsonContent {
+		switch v := content.(type) {
+		case string:
+			bundle[key] = []string{v}
+		case []interface{}:
+			values := make([]string, 0)
+			for _, value := range v {
+				values = append(values, fmt.Sprintf("%v", value))
+			}
+			bundle[key] = values
+		case map[string]interface{}:
+			subValues := translator.mapBundleStructure(v)
+			for subKey, subValue := range subValues {
+				bundle[fmt.Sprintf("%s%s%s", key, keyDelim, subKey)] = subValue
+			}
+		default:
+			bundle[key] = []string{fmt.Sprintf("%v", v)}
+		}
+	}
+
+	return bundle
 }

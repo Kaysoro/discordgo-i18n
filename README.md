@@ -42,14 +42,21 @@ Load bundles for locales to support.
 err := i18n.LoadBundle(discordgo.French, "path/to/your/file.json")
 ```
 
-The bundle format must respect the schema below; note [text/template](http://golang.org/pkg/text/template/) syntax is used to inject variables. Since the library lets you define multiple translations per key, an array is required.
+The bundle format must respect the schema below; note [text/template](http://golang.org/pkg/text/template/) syntax is used to inject variables.  
+For a given key, value can be string, string array to randomize translations or even deep structures to group translations as wanted. In case any other type is provided, it is mapped to string automatically.
 
 ```json
 {
-    "hello_world": ["Hello world!"],
-    "hello_anyone": ["Hello {{ .anyone }}!"],
+    "hello_world": "Hello world!",
+    "hello_anyone": "Hello {{ .anyone }}!",
+    "image": "https://media2.giphy.com/media/Ju7l5y9osyymQ/giphy.gif",
     "bye": ["See you", "Bye!"],
-    "image": ["https://media2.giphy.com/media/Ju7l5y9osyymQ/giphy.gif"]
+    "command": {
+        "scream": {
+            "dog": "Waf waf! 🐶",
+            "cat": "Miaw! 🐱"
+        }
+    }
 }
 ```
 
@@ -81,6 +88,10 @@ fmt.Println(bye)
 keyDoesNotExist := i18n.Get(discordgo.EnglishUS, "key_does_not_exist")
 fmt.Println(keyDoesNotExist)
 // Prints "key_does_not_exist"
+
+dog := i18n.Get(discordgo.EnglishUS, "command.scream.dog")
+fmt.Println(dog)
+// Prints "Waf waf! 🐶"
 ```
 
 Here an example of how it can work with interactions.
@@ -94,7 +105,7 @@ func HelloWorld(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			Embeds: []*discordgo.MessageEmbed{
                 {
                     Title:       i18n.Get(i.Locale, "hello_world"),
-		            Description: i18n.Get(i.Locale, "hello_anyone", i18n.Vars{"anyone": i.Member.Nick}),
+                    Description: i18n.Get(i.Locale, "hello_anyone", i18n.Vars{"anyone": i.Member.Nick}),
                     Image:       &discordgo.MessageEmbedImage{URL: i18n.Get(i.Locale, "image")},
                 },
             },
