@@ -233,3 +233,20 @@ func TestMapBundleStructure(t *testing.T) {
 			fmt.Sprintf("%s:\n\nExpecting: %v\n\nGot      : %v", test.Description, test.ExpectedBundle, bundle))
 	}
 }
+
+func TestGetLocalizations(t *testing.T) {
+	setUp()
+	defer tearDown()
+
+	// Nominal case: empty map when no bundle loaded
+	assert.Empty(t, translatorTest.GetLocalizations("hi", Vars{}))
+
+	// Nominal case: two bundles loaded so two translations expected
+	assert.NoError(t, translatorTest.LoadBundle(discordgo.Dutch, translatornominalCase1))
+	assert.NoError(t, translatorTest.LoadBundle(defaultLocale, translatornominalCase2))
+	assert.Equal(t, 2, len(*translatorTest.GetLocalizations("hi", Vars{})))
+
+	// Nominal case: three bundles loaded so three translations expected
+	assert.NoError(t, translatorTest.LoadBundle(discordgo.ChineseCN, translatornominalCase1))
+	assert.Equal(t, 3, len(*translatorTest.GetLocalizations("hi", Vars{})))
+}

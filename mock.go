@@ -27,11 +27,20 @@ func (mock *translatorMock) LoadBundle(locale discordgo.Locale, file string) err
 	return nil
 }
 
-func (mock *translatorMock) Get(locale discordgo.Locale, key string, values Vars) string {
+func (mock *translatorMock) Get(locale discordgo.Locale, key string, variables Vars) string {
 	if mock.GetFunc != nil {
-		return mock.GetFunc(locale, key, values)
+		return mock.GetFunc(locale, key, variables)
 	}
 
 	log.Warn().Msgf("Get not mocked")
 	return ""
+}
+
+func (mock *translatorMock) GetLocalizations(key string, variables Vars) *map[discordgo.Locale]string {
+	if mock.GetFunc != nil {
+		return mock.GetLocalizationsFunc(key, variables)
+	}
+
+	log.Warn().Msgf("GetLocalizations not mocked")
+	return nil
 }

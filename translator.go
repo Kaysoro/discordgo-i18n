@@ -111,6 +111,16 @@ func (translator *translatorImpl) Get(locale discordgo.Locale, key string, varia
 	return raw
 }
 
+func (translator *translatorImpl) GetLocalizations(key string, variables Vars) *map[discordgo.Locale]string {
+	localizations := make(map[discordgo.Locale]string)
+
+	for locale := range translator.translations {
+		localizations[locale] = translator.Get(locale, key, variables)
+	}
+
+	return &localizations
+}
+
 func (translator *translatorImpl) mapBundleStructure(jsonContent map[string]interface{}) bundle {
 	bundle := make(map[string][]string)
 	for key, content := range jsonContent {

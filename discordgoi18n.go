@@ -39,3 +39,19 @@ func Get(language discordgo.Locale, key string, values ...Vars) string {
 
 	return instance.Get(language, key, args)
 }
+
+// GetLocalizations retrieves translations from every loaded bundles.
+// Aims to simplify discordgo.ApplicationCommand instanciations by providing
+// localizations structures that can be used for any localizable field (example:
+// command name, description, etc). Thread-safe.
+func GetLocalizations(key string, values ...Vars) *map[discordgo.Locale]string {
+	args := make(Vars)
+
+	for _, variables := range values {
+		for variable, value := range variables {
+			args[variable] = value
+		}
+	}
+
+	return instance.GetLocalizations(key, args)
+}

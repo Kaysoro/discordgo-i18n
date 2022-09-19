@@ -53,6 +53,8 @@ For a given key, value can be string, string array to randomize translations or 
     "bye": ["See you", "Bye!"],
     "command": {
         "scream": {
+            "name": "scream",
+            "description": "Screams something",
             "dog": "Waf waf! 🐶",
             "cat": "Miaw! 🐱"
         }
@@ -92,6 +94,17 @@ fmt.Println(keyDoesNotExist)
 dog := i18n.Get(discordgo.EnglishUS, "command.scream.dog")
 fmt.Println(dog)
 // Prints "Waf waf! 🐶"
+```
+
+To get localizations for a command name, description, options or other fields, use the below thread-safe method. It retrieves a `*map[discordgo.Locale]string` based on the loaded bundles.
+
+```go
+screamCommand := discordgo.ApplicationCommand{
+    Name:                     "scream",
+    Description:              "Here a default description for my command",
+    NameLocalizations:        i18n.GetLocalizations("command.scream.name"),
+    DescriptionLocalizations: i18n.GetLocalizations("command.scream.description"),
+}
 ```
 
 Here an example of how it can work with interactions.
