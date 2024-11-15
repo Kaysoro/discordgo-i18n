@@ -1,11 +1,10 @@
 # discordgo-i18n
 [![GoDoc](https://godoc.org/github.com/kaysoro/discordgo-i18n?status.svg)](https://godoc.org/github.com/kaysoro/discordgo-i18n)
-![Build status](https://github.com/kaysoro/discordgo-i18n/workflows/Build/badge.svg) 
-[![Report card](https://goreportcard.com/badge/github.com/kaysoro/discordgo-i18n)](https://goreportcard.com/report/github.com/kaysoro/discordgo-i18n) 
+[![Golangci-lint](https://github.com/Kaysoro/discordgo-i18n/actions/workflows/golangci-lint.yml/badge.svg)](https://github.com/Kaysoro/discordgo-i18n/actions/workflows/golangci-lint.yml)
+[![Test](https://github.com/Kaysoro/discordgo-i18n/actions/workflows/test.yml/badge.svg)](https://github.com/Kaysoro/discordgo-i18n/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/kaysoro/discordgo-i18n/branch/main/graph/badge.svg)](https://codecov.io/gh/kaysoro/discordgo-i18n) 
-[![Sourcegraph](https://sourcegraph.com/github.com/kaysoro/discordgo-i18n/-/badge.svg)](https://sourcegraph.com/github.com/kaysoro/discordgo-i18n?badge)
 
-discordgo-i18n is a simple and lightweight Go package that helps you translate Go programs into [languages supported by Discord](https://discord.com/developers/docs/reference#locales).
+discordgo-i18n is a simple and lightweight Go package that helps you translate Go programs into [languages supported by Discord](https://discord.com/developers/docs/reference#LOCALES).
 
 - Built to ease usage of [bwmarrin/discordgo](https://github.com/bwmarrin/discordgo)
 - Less verbose than [go-i18n](https://github.com/nicksnyder/go-i18n)

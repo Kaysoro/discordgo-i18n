@@ -48,11 +48,12 @@ const (
 )
 
 var (
+	//nolint:gochecknoglobals // Acceptable for a test.
 	translatorTest *translatorImpl
 )
 
 func setUp() {
-	translatorTest = new()
+	translatorTest = newTranslator()
 	if err := os.WriteFile(translatornominalCase1, []byte(content1), os.ModePerm); err != nil {
 		log.Fatal().Err(err).Msgf("'%s' could not be created, test stopped", translatornominalCase1)
 	}
@@ -77,7 +78,7 @@ func tearDown() {
 	}
 }
 
-func TestNew(t *testing.T) {
+func TestNewTranslator(t *testing.T) {
 	setUp()
 	defer tearDown()
 
@@ -228,9 +229,9 @@ func TestMapBundleStructure(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		bundle := translatorTest.mapBundleStructure(test.Input)
-		assert.True(t, reflect.DeepEqual(test.ExpectedBundle, bundle),
-			fmt.Sprintf("%s:\n\nExpecting: %v\n\nGot      : %v", test.Description, test.ExpectedBundle, bundle))
+		result := translatorTest.mapBundleStructure(test.Input)
+		assert.True(t, reflect.DeepEqual(test.ExpectedBundle, result),
+			fmt.Sprintf("%s:\n\nExpecting: %v\n\nGot      : %v", test.Description, test.ExpectedBundle, result))
 	}
 }
 

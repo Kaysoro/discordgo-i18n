@@ -4,10 +4,11 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+//nolint:gochecknoglobals // False positive, cannot be overridden.
 var instance translator
 
 func init() {
-	instance = new()
+	instance = newTranslator()
 }
 
 // SetDefaults sets the locale used as a fallback.

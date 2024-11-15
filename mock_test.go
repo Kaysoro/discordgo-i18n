@@ -8,7 +8,6 @@ import (
 )
 
 func TestMock(t *testing.T) {
-
 	// Must not panic
 	mock := newMock()
 	mock.SetDefault(discordgo.ChineseCN)
@@ -17,18 +16,18 @@ func TestMock(t *testing.T) {
 	assert.Nil(t, mock.GetLocalizations("", nil))
 
 	var called bool
-	mock.SetDefaultFunc = func(locale discordgo.Locale) {
+	mock.SetDefaultFunc = func(_ discordgo.Locale) {
 		called = true
 	}
-	mock.LoadBundleFunc = func(locale discordgo.Locale, file string) error {
+	mock.LoadBundleFunc = func(_ discordgo.Locale, _ string) error {
 		called = true
 		return nil
 	}
-	mock.GetFunc = func(locale discordgo.Locale, key string, values Vars) string {
+	mock.GetFunc = func(_ discordgo.Locale, _ string, _ Vars) string {
 		called = true
 		return ""
 	}
-	mock.GetLocalizationsFunc = func(key string, values Vars) *map[discordgo.Locale]string {
+	mock.GetLocalizationsFunc = func(_ string, _ Vars) *map[discordgo.Locale]string {
 		called = true
 		return nil
 	}
