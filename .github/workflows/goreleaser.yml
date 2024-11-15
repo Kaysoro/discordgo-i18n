@@ -6,23 +6,26 @@ on:
       - '*'
 
 jobs:
-  goreleaser:
+  release:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     steps:
-      -
-        name: Checkout
+      - name: Checkout source code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      -
-        name: Set up Go
-        uses: actions/setup-go@v3
-      -
-        name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v3
+
+      - name: Set up Go environment
+        uses: actions/setup-go@v4
         with:
-          distribution: goreleaser
-          version: latest
+          go-version: 'latest'
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v4
+        with:
           args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
