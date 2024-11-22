@@ -36,6 +36,15 @@ func (mock *translatorMock) Get(locale discordgo.Locale, key string, variables V
 	return ""
 }
 
+func (mock *translatorMock) GetDefault(key string, variables Vars) string {
+	if mock.GetDefaultFunc != nil {
+		return mock.GetDefaultFunc(key, variables)
+	}
+
+	log.Warn().Msgf("GetDefault not mocked")
+	return ""
+}
+
 func (mock *translatorMock) GetLocalizations(key string, variables Vars) *map[discordgo.Locale]string {
 	if mock.GetFunc != nil {
 		return mock.GetLocalizationsFunc(key, variables)

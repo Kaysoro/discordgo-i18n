@@ -67,7 +67,7 @@ func (translator *translatorImpl) Get(locale discordgo.Locale, key string, varia
 		if locale != translator.defaultLocale {
 			log.Warn().Msgf("Bundle '%s' is not loaded, trying to translate key '%s' in '%s'",
 				locale, key, translator.defaultLocale)
-			return translator.Get(translator.defaultLocale, key, variables)
+			return translator.GetDefault(key, variables)
 		}
 
 		log.Warn().
@@ -81,7 +81,7 @@ func (translator *translatorImpl) Get(locale discordgo.Locale, key string, varia
 			log.Warn().
 				Msgf("No label found for key '%s' in '%s', trying to translate it in %s",
 					key, locale, translator.defaultLocale)
-			return translator.Get(translator.defaultLocale, key, variables)
+			return translator.GetDefault(key, variables)
 		}
 
 		log.Warn().Msgf("No label found for key '%s' in '%s', key returned", locale, key)
@@ -110,6 +110,10 @@ func (translator *translatorImpl) Get(locale discordgo.Locale, key string, varia
 	}
 
 	return raw
+}
+
+func (translator *translatorImpl) GetDefault(key string, variables Vars) string {
+	return translator.Get(translator.defaultLocale, key, variables)
 }
 
 func (translator *translatorImpl) GetLocalizations(key string, variables Vars) *map[discordgo.Locale]string {

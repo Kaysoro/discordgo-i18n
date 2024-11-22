@@ -33,7 +33,8 @@ const (
 	{
 		"this": ["is a {{ .Test }}"],
 		"with.a.file": ["containing", "less", "variables"],
-		"bye": ["see you"]
+		"bye": ["see you"],
+		"parse2": ["{{if $foo}}{{end}}"]
 	}
 	`
 
@@ -121,13 +122,13 @@ func TestLoadBundle(t *testing.T) {
 	assert.NoError(t, translatorTest.LoadBundle(discordgo.French, translatornominalCase2))
 	assert.Equal(t, 2, len(translatorTest.loadedBundles))
 	assert.Equal(t, 1, len(translatorTest.translations))
-	assert.Equal(t, 3, len(translatorTest.translations[discordgo.French]))
+	assert.Equal(t, 4, len(translatorTest.translations[discordgo.French]))
 
 	// Nominal case, load a bundle already loaded but for another locale
 	assert.NoError(t, translatorTest.LoadBundle(discordgo.EnglishGB, translatornominalCase2))
 	assert.Equal(t, 2, len(translatorTest.loadedBundles))
 	assert.Equal(t, 2, len(translatorTest.translations))
-	assert.Equal(t, 3, len(translatorTest.translations[discordgo.EnglishGB]))
+	assert.Equal(t, 4, len(translatorTest.translations[discordgo.EnglishGB]))
 
 	// Nominal case, reload a bundle linked to two locales
 	assert.NoError(t, translatorTest.LoadBundle(discordgo.EnglishGB, translatornominalCase1))
@@ -160,6 +161,28 @@ func TestGet(t *testing.T) {
 
 	// Bad case, value is well structured but cannot inject value
 	assert.Equal(t, "this is a {{ .Test }}", translatorTest.Get(discordgo.Dutch, "hi", Vars{}))
+}
+
+func TestGetDefault(t *testing.T) {
+	setUp()
+	defer tearDown()
+
+	// Nominal case, get without bundle
+	assert.Equal(t, "hi", translatorTest.GetDefault("hi", nil))
+
+	// Nominal case, unexisting key with bundle loaded
+	assert.NoError(t, translatorTest.LoadBundle(defaultLocale, translatornominalCase2))
+	assert.Equal(t, "does_not_exist", translatorTest.GetDefault("does_not_exist", nil))
+
+	// Nominal case, Get existing key from loaded bundle
+	assert.Equal(t, "is a {{ .Test }}", translatorTest.GetDefault("this", nil))
+	assert.Equal(t, "is a test :)", translatorTest.GetDefault("this", Vars{"Test": "test :)"}))
+
+	// Bad case, value is not well structured to be parsed
+	assert.Equal(t, "{{if $foo}}{{end}}", translatorTest.GetDefault("parse2", Vars{}))
+
+	// Bad case, value is well structured but cannot inject value
+	assert.Equal(t, "is a {{ .Test }}", translatorTest.GetDefault("this", Vars{}))
 }
 
 func TestMapBundleStructure(t *testing.T) {

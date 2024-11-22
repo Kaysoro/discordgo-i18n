@@ -12,6 +12,7 @@ type translator interface {
 	SetDefault(locale discordgo.Locale)
 	LoadBundle(locale discordgo.Locale, file string) error
 	Get(locale discordgo.Locale, key string, values Vars) string
+	GetDefault(key string, values Vars) string
 	GetLocalizations(key string, variables Vars) *map[discordgo.Locale]string
 }
 
@@ -25,6 +26,7 @@ type translatorMock struct {
 	SetDefaultFunc       func(locale discordgo.Locale)
 	LoadBundleFunc       func(locale discordgo.Locale, file string) error
 	GetFunc              func(locale discordgo.Locale, key string, values Vars) string
+	GetDefaultFunc       func(key string, values Vars) string
 	GetLocalizationsFunc func(key string, variables Vars) *map[discordgo.Locale]string
 }
 

@@ -13,6 +13,7 @@ func TestMock(t *testing.T) {
 	mock.SetDefault(discordgo.ChineseCN)
 	assert.NoError(t, mock.LoadBundle(discordgo.SpanishES, ""))
 	assert.Empty(t, mock.Get(discordgo.Croatian, "", nil))
+	assert.Empty(t, mock.GetDefault("", nil))
 	assert.Nil(t, mock.GetLocalizations("", nil))
 
 	var called bool
@@ -24,6 +25,10 @@ func TestMock(t *testing.T) {
 		return nil
 	}
 	mock.GetFunc = func(_ discordgo.Locale, _ string, _ Vars) string {
+		called = true
+		return ""
+	}
+	mock.GetDefaultFunc = func(_ string, _ Vars) string {
 		called = true
 		return ""
 	}
@@ -42,6 +47,10 @@ func TestMock(t *testing.T) {
 
 	called = false
 	assert.Empty(t, mock.Get(discordgo.Croatian, "", nil))
+	assert.True(t, called)
+
+	called = false
+	assert.Empty(t, mock.GetDefault("", nil))
 	assert.True(t, called)
 
 	called = false

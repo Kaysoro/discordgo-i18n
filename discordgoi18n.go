@@ -41,6 +41,23 @@ func Get(language discordgo.Locale, key string, values ...Vars) string {
 	return instance.Get(language, key, args)
 }
 
+// GetDefault gets a translation corresponding to default locale and a key.
+// Optional Vars parameter is used to inject variables in the translation.
+// When a key does not match any translations in the default locale,
+// key is returned. If more than one translation is available for dedicated key,
+// it is picked randomly. Thread-safe.
+func GetDefault(key string, values ...Vars) string {
+	args := make(Vars)
+
+	for _, variables := range values {
+		for variable, value := range variables {
+			args[variable] = value
+		}
+	}
+
+	return instance.GetDefault(key, args)
+}
+
 // GetLocalizations retrieves translations from every loaded bundles.
 // Aims to simplify discordgo.ApplicationCommand instanciations by providing
 // localizations structures that can be used for any localizable field (example:
